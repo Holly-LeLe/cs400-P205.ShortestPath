@@ -2,6 +2,8 @@ import java.util.PriorityQueue;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class extends the BaseGraph data structure with additional methods for
@@ -130,6 +132,78 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      */
     public double shortestPathCost(NodeType start, NodeType end) {
         return Double.NaN;
+    }
+
+
+    /**
+     * Tests shortest path data and cost on a directed graph with multiple paths.
+     */
+    @Test
+    public void testShortestPathLectureExample() {
+        DijkstraGraph<String, Integer> graph = new DijkstraGraph<>();
+
+        graph.insertNode("A");
+        graph.insertNode("B");
+        graph.insertNode("C");
+        graph.insertNode("D");
+        graph.insertNode("E");
+
+        graph.insertEdge("A", "B", 4);
+        graph.insertEdge("A", "C", 2);
+        graph.insertEdge("C", "B", 1);
+        graph.insertEdge("B", "D", 5);
+        graph.insertEdge("C", "D", 8);
+        graph.insertEdge("C", "E", 10);
+        graph.insertEdge("D", "E", 2);
+
+        assertEquals(10.0, graph.shortestPathCost("A", "E"));
+        assertEquals(List.of("A", "C", "B", "D", "E"),
+                graph.shortestPathData("A", "E"));
+    }
+
+    /**
+     * Tests a different start and end node using the same graph structure.
+     */
+    @Test
+    public void testShortestPathDifferentStartEnd() {
+        DijkstraGraph<String, Integer> graph = new DijkstraGraph<>();
+
+        graph.insertNode("A");
+        graph.insertNode("B");
+        graph.insertNode("C");
+        graph.insertNode("D");
+        graph.insertNode("E");
+
+        graph.insertEdge("A", "B", 4);
+        graph.insertEdge("A", "C", 2);
+        graph.insertEdge("C", "B", 1);
+        graph.insertEdge("B", "D", 5);
+        graph.insertEdge("C", "D", 8);
+        graph.insertEdge("C", "E", 10);
+        graph.insertEdge("D", "E", 2);
+
+        assertEquals(8.0, graph.shortestPathCost("C", "E"));
+        assertEquals(List.of("C", "B", "D", "E"),
+                graph.shortestPathData("C", "E"));
+    }
+
+    /**
+     * Tests that a NoSuchElementException is thrown when both nodes exist,
+     * but no directed path connects the start node to the end node.
+     */
+    @Test
+    public void testNoDirectedPathThrowsException() {
+        DijkstraGraph<String, Integer> graph = new DijkstraGraph<>();
+
+        graph.insertNode("A");
+        graph.insertNode("B");
+        graph.insertNode("C");
+
+        graph.insertEdge("A", "B", 3);
+
+        assertThrows(NoSuchElementException.class, () -> {
+            graph.shortestPathData("B", "C");
+        });
     }
 
 }
