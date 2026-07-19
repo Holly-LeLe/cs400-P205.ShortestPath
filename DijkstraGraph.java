@@ -95,7 +95,42 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     protected SearchNode computeShortestPath(Node start, Node end) {
-        return null;
+
+        if (start == null || end == null)
+            throw new NullPointerException();
+
+        PriorityQueue<SearchNode> queue = new PriorityQueue<>();
+
+        PlaceholderMap<NodeType, Boolean> visited =
+            new PlaceholderMap<>();
+
+        queue.add(new SearchNode(start));
+
+        while (!queue.isEmpty()) {
+
+            SearchNode current = queue.poll();
+
+            if (visited.containsKey(current.node.data))
+                continue;
+
+            visited.put(current.node.data, true);
+
+            if (current.node == end)
+                return current;
+
+            for (Edge edge : current.node.edgesLeaving) {
+
+                if (!visited.containsKey(edge.succ.data)) {
+
+                    SearchNode next =
+                        new SearchNode(current, edge);
+
+                    queue.add(next);
+                }
+            }
+        }
+
+        throw new NoSuchElementException();
     }
 
     /**
@@ -114,7 +149,18 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     public List<NodeType> shortestPathData(NodeType start, NodeType end) {
-        return null;
+
+        SearchNode path =
+            computeShortestPath(nodes.get(start), nodes.get(end));
+
+        LinkedList<NodeType> result = new LinkedList<>();
+
+        while (path != null) {
+            result.addFirst(path.node.data);
+            path = path.pred;
+        }
+
+        return result;
     }
 
     /**
@@ -131,7 +177,11 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     public double shortestPathCost(NodeType start, NodeType end) {
-        return Double.NaN;
+
+        return computeShortestPath(
+            nodes.get(start),
+            nodes.get(end)
+        ).cost;
     }
 
 
